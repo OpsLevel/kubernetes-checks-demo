@@ -2,6 +2,8 @@
 
 This example repository is a Kubernetes agent that watches resources in your cluster and publishes their yaml to an OpsLevel payload check. This runs in your k8s cluster.
 
+The intent of this repo was created as an example of how to get kubernetes data into OpsLevel payload checks as described in the blog post [Validating Kubernetes Best Practices](https://www.opslevel.com/blog/validating-kubernetes-best-practices/)
+
 ### Getting Started
 
 ```
