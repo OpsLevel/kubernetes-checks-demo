@@ -1,0 +1,12 @@
+integrationid: "" #opslevel payload integration id
+payloadcheckid: "" #payload check identifier / check reference id
+resync: 3600 #1hr
+deployments: true
+statefulsets: false
+daemonsets: false
+jobs: false
+cronjobs: false
+services: false
+ingress: false
+configmaps: false
+secrets: false
