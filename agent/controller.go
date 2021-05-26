@@ -28,12 +28,12 @@ import (
 )
 
 type controller struct {
-	name string
-	integrationId string
+	name           string
+	integrationId  string
 	payloadCheckId string
-	clientset kubernetes.Interface
-	queue workqueue.RateLimitingInterface
-	informer cache.SharedIndexInformer
+	clientset      kubernetes.Interface
+	queue          workqueue.RateLimitingInterface
+	informer       cache.SharedIndexInformer
 }
 
 type controllerEvent struct {
@@ -76,12 +76,12 @@ func createKubernetesClient() kubernetes.Interface {
 func createController(channel <-chan struct{}, client kubernetes.Interface, informer cache.SharedIndexInformer, name string, integrationId string, payloadCheckId string) {
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 	controller := &controller{
-		name: name,
-		integrationId: integrationId,
+		name:           name,
+		integrationId:  integrationId,
 		payloadCheckId: payloadCheckId,
-		clientset: client,
-		informer: informer,
-		queue: queue,
+		clientset:      client,
+		informer:       informer,
+		queue:          queue,
 	}
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    controller.OnAdd,
@@ -93,32 +93,32 @@ func createController(channel <-chan struct{}, client kubernetes.Interface, info
 
 func createControllers(channel <-chan struct{}, c *config.Config) {
 	client := createKubernetesClient()
-	factory := informers.NewSharedInformerFactory(client, time.Second * time.Duration(c.Resync))
-	if (c.Deployments) {
+	factory := informers.NewSharedInformerFactory(client, time.Second*time.Duration(c.Resync))
+	if c.Deployments {
 		createController(channel, client, factory.Apps().V1().Deployments().Informer(), "Deployment", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.StatefulSets) {
+	if c.StatefulSets {
 		createController(channel, client, factory.Apps().V1().StatefulSets().Informer(), "StatefulSets", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.DaemonSets) {
+	if c.DaemonSets {
 		createController(channel, client, factory.Apps().V1().DaemonSets().Informer(), "DaemonSets", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.Jobs) {
+	if c.Jobs {
 		createController(channel, client, factory.Batch().V1().Jobs().Informer(), "Job", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.CronJobs) {
+	if c.CronJobs {
 		createController(channel, client, factory.Batch().V1beta1().CronJobs().Informer(), "CronJob", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.Services) {
+	if c.Services {
 		createController(channel, client, factory.Core().V1().Services().Informer(), "Service", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.Ingress) {
+	if c.Ingress {
 		createController(channel, client, factory.Networking().V1().Ingresses().Informer(), "Ingress", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.Configmaps) {
+	if c.Configmaps {
 		createController(channel, client, factory.Core().V1().ConfigMaps().Informer(), "Configmap", c.IntegrationId, c.PayloadCheckId)
 	}
-	if (c.Secrets) {
+	if c.Secrets {
 		createController(channel, client, factory.Core().V1().Secrets().Informer(), "Secrets", c.IntegrationId, c.PayloadCheckId)
 	}
 	factory.Start(channel)
@@ -203,9 +203,9 @@ func (c *controller) processNextItem() bool {
 }
 
 type Payload struct {
-	Service string `json:"service"`
-	Check string `json:"checkIdentifier"`
-	Data map[string]interface{} `json:"data"`
+	Service string                 `json:"service"`
+	Check   string                 `json:"checkIdentifier"`
+	Data    map[string]interface{} `json:"data"`
 }
 
 func (c *controller) post(payload Payload) error {
@@ -238,9 +238,9 @@ func (c *controller) processItem(event controllerEvent) error {
 		jsonData, _ := json.Marshal(obj)
 		json.Unmarshal(jsonData, &k8s)
 		payload := Payload{
-			Service: mObj.GetName(),
-			Check: c.payloadCheckId,
-			Data: k8s,
+			Service: fmt.Sprintf("k8s:%s-%s", mObj.GetName(), mObj.GetNamespace()),
+			Check:   c.payloadCheckId,
+			Data:    k8s,
 		}
 		if err = c.post(payload); err != nil {
 			return err
