@@ -204,7 +204,7 @@ func (c *controller) processNextItem() bool {
 
 type Payload struct {
 	Service string                 `json:"service"`
-	Check   string                 `json:"checkIdentifier"`
+	Check   string                 `json:"check"`
 	Data    map[string]interface{} `json:"data"`
 }
 
