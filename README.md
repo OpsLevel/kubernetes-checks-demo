@@ -76,21 +76,17 @@ metadata:
   name: opslevel-payload-check
 rules:
 - apiGroups:
-  - apps
-  resources:
-  - deployments
+    - ""
+    - apps
+    - extensions
+    - batch
+    - networking
+  resources: 
+    - "*"
   verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - extensions
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
+    - get
+    - list
+    - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
