@@ -70,6 +70,43 @@ docker run -v $(pwd)/opslevel.yaml:/opslevel.yaml <docker image you built> -c /o
 Configure the ConfigMap and Deploy it to your kubernetes cluster.
 
 ```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opslevel-payload-check
+rules:
+- apiGroups:
+    - ""
+    - apps
+    - extensions
+    - batch
+    - networking
+  resources: 
+    - "*"
+  verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: opslevel-payload-check
+roleRef: 
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: opslevel-payload-check
+subjects:
+- kind: ServiceAccount
+  name: opslevel-payload-check
+  namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: opslevel-payload-check
+  namespace: default
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -112,6 +149,7 @@ spec:
       labels:
         app: opslevel-payload-check
     spec:
+      serviceAccountName: opslevel-payload-check
       containers:
         - name: web
           image: <replace me with location where you published the image>
