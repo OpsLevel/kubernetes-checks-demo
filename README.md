@@ -1,3 +1,5 @@
+## THIS REPO HAS BEEN ARCHIVED BECAUSE WE NOW HAVE THIS FUNCTIONALITY BUILT DIRECTLY INTO OUR [KUBERNETES SYNC TOOL](https://github.com/OpsLevel/kubectl-opslevel/blob/main/Readme.md#collect)
+
 # Kubernetes Checks Demo
 
 This example repository is a Kubernetes agent that watches resources in your cluster and publishes their yaml to an OpsLevel payload check. This runs in your k8s cluster.
